@@ -1,7 +1,31 @@
+# macOS
 .DS_Store
+
+# Python
 *.pyc
-*.egg-info
+*.pyo
+*.pyd
+*.egg-info/
+__pycache__/
+
+# Swap files
 *.swp
+
+# Node
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+
+# Environment
+.env
+.venv/
+venv/
+
+# Testing
+.pytest_cache/
+.coverage
+
+# Misc
 tags
-node_modules
-__pycache__

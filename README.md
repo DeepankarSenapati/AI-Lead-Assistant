@@ -1,41 +1,112 @@
-### AI Lead Assistant
+# AI Lead Assistant
 
-AI-powered Lead automation for ERPNext using OCR and LLMs.
+An AI-powered ERPNext extension that automates Lead creation from uploaded documents using the Frappe Framework.
 
-### Installation
+---
 
-You can install this app using the [bench](https://github.com/frappe/bench) CLI:
+## Overview
 
-```bash
-cd $PATH_TO_YOUR_BENCH
-bench get-app $URL_OF_THIS_REPO --branch develop
-bench install-app ai_lead_assistant
+AI Lead Assistant is a custom Frappe application developed for ERPNext CRM.
+
+The extension allows users to upload a document (such as an ID card, business card, or image), extract relevant information using OCR, and automatically populate Lead fields. This reduces manual data entry while improving efficiency and accuracy.
+
+The project demonstrates how AI can be integrated into ERPNext through a modular, upgrade-safe custom application without modifying the ERPNext core.
+
+---
+
+## Features
+
+- AI Assist button integrated into the Lead form
+- OCR-based information extraction
+- Automatic Lead field population
+- Modular service-oriented architecture
+- Built as a custom Frappe application
+- Upgrade-safe (no ERPNext core modifications)
+
+---
+
+## Technology Stack
+
+- ERPNext v15
+- Frappe Framework v15
+- Python
+- JavaScript (Client Scripts)
+- OCR
+
+---
+
+## Architecture
+
+```
+Lead Form
+     │
+     ▼
+AI Assist Button
+     │
+     ▼
+Client Script
+     │
+     ▼
+Whitelisted API
+     │
+     ▼
+Lead Service
+     │
+     ▼
+File Service
+     │
+     ▼
+OCR Service
+     │
+     ▼
+Populate Lead Fields
 ```
 
-### Contributing
+---
 
-This app uses `pre-commit` for code formatting and linting. Please [install pre-commit](https://pre-commit.com/#installation) and enable it for this repository:
+## Project Structure
 
-```bash
-cd apps/ai_lead_assistant
-pre-commit install
+```
+ai_lead_assistant/
+├── api.py
+├── hooks.py
+├── public/
+│   └── js/
+├── services/
+│   ├── lead_service.py
+│   ├── file_service.py
+│   └── ocr_service.py
 ```
 
-Pre-commit is configured to use the following tools for checking and formatting your code:
+---
 
-- ruff
-- eslint
-- prettier
-- pyupgrade
+## Future Improvements
 
-### CI
+- Duplicate Lead Detection
+- AI-based Lead Scoring
+- Suggested Sales Representative
+- Suggested Industry & Territory
+- Confidence Score for AI Predictions
+- Batch Lead Creation from Multiple Documents
 
-This app can use GitHub Actions for CI. The following workflows are configured:
+---
 
-- CI: Installs this app and runs unit tests on every push to `develop` branch.
-- Linters: Runs [Frappe Semgrep Rules](https://github.com/frappe/semgrep-rules) and [pip-audit](https://pypi.org/project/pip-audit/) on every pull request.
+## Installation
 
+Clone the repository into your Frappe Bench.
 
-### License
+```bash
+cd frappe-bench
 
-mit
+bench get-app https://github.com/<your-github-username>/AI-Lead-Assistant.git
+
+bench --site <site-name> install-app ai_lead_assistant
+
+bench migrate
+```
+
+---
+
+## License
+
+This project is licensed under the MIT License.
