@@ -14,6 +14,13 @@ The project demonstrates how AI can be integrated into ERPNext through a modular
 
 ---
 
+## Demo Video
+
+🎥 Watch the project demonstration here:
+
+**Google Drive:**  
+https://drive.google.com/file/d/1Xu3gFgqrpi4maC38-51Wscgai0J9Vk9-/view?usp=sharing
+
 ## Features
 
 - AI Assist button integrated into the Lead form
@@ -25,6 +32,35 @@ The project demonstrates how AI can be integrated into ERPNext through a modular
 
 ---
 
+# How it Works
+
+### Step 1 - Attach the ID Document
+
+Upload an ID document (business card, ID card, or similar document) to the **ID Document** field on the Lead form.
+
+<p align="center">
+  <img src="screenshots/step1-upload-document.png" width="900">
+</p>
+
+---
+
+### Step 2 - Click **AI Assist**
+
+Click the **AI Assist** button to extract information from the uploaded document.
+
+<p align="center">
+  <img src="screenshots/step2-ai-assist.png" width="900">
+</p>
+
+---
+
+### Step 3 - Review & Save
+
+The extracted information is automatically populated into the Lead fields. Review the generated values and save the Lead.
+
+<p align="center">
+  <img src="screenshots/step3-autofill.png" width="900">
+</p>
 ## Technology Stack
 
 - ERPNext v15
