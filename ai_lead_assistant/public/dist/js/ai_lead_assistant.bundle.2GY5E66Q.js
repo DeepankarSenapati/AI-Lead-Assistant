@@ -631,4 +631,4 @@ without requiring any changes to the framework.
   registerExtensions();
   registerAdapters(extension_manager_default);
 })();
-//# sourceMappingURL=ai_lead_assistant.bundle.WLNB5AUY.js.map
+//# sourceMappingURL=ai_lead_assistant.bundle.2GY5E66Q.js.map

@@ -16,7 +16,7 @@ const FormAssistantExtension = {
     icon: "comment",
 
     supports(context) {
-        return context.type === "form" ;
+        return context.type === "form"   ;
     },
 
     onInit(context, api) {

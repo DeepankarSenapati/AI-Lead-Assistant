@@ -1,148 +1,179 @@
-# AI Lead Assistant
+# AI Extension Framework for ERPNext
 
-An AI-powered ERPNext extension that automates Lead creation from uploaded documents using the Frappe Framework.
-
----
-
-## Overview
-
-AI Lead Assistant is a custom Frappe application developed for ERPNext CRM.
-
-The extension allows users to upload a document (such as an ID card, business card, or image), extract relevant information using OCR, and automatically populate Lead fields. This reduces manual data entry while improving efficiency and accuracy.
-
-The project demonstrates how AI can be integrated into ERPNext through a modular, upgrade-safe custom application without modifying the ERPNext core.
+A modular AI Extension Framework built on top of ERPNext that enables multiple AI-powered applications to be seamlessly integrated into ERPNext.
 
 ---
 
-## Demo Video
+# Overview
 
-🎥 Watch the project demonstration here:
+The project initially started with implementing a heuristic-based AI Form Assistant for automatically extracting information from uploaded documents.
 
-**Google Drive:**  
-https://drive.google.com/file/d/1Xu3gFgqrpi4maC38-51Wscgai0J9Vk9-/view?usp=sharing
+During development, it became evident that building individual AI features independently would not scale well. The focus was therefore shifted towards building a reusable AI Extension Framework capable of hosting multiple AI applications inside ERPNext.
 
-## Features
+The framework currently includes:
 
-- AI Assist button integrated into the Lead form
-- OCR-based information extraction
-- Automatic Lead field population
-- Modular service-oriented architecture
-- Built as a custom Frappe application
-- Upgrade-safe (no ERPNext core modifications)
+- AI Form Assistant
+- AI Chat Assistant
+
+while allowing future AI applications to be added with minimal effort.
 
 ---
 
-# How it Works
+# Features
 
-### Step 1 - Attach the ID Document
-
-Upload an ID document (business card, ID card, or similar document) to the **ID Document** field on the Lead form.
-
-<p align="center">
-  <img src="screenshots/step1-upload-document.png" width="900">
-</p>
-
----
-
-### Step 2 - Click **AI Assist**
-
-Click the **AI Assist** button to extract information from the uploaded document.
-
-<p align="center">
-  <img src="screenshots/step2-ai-assist.png" width="900">
-</p>
+- Modular AI Extension Framework
+- Plugin-based architecture
+- Generic frontend extension loader
+- Modular backend application structure
+- Dynamic DocType support
+- Context-aware extension loading
+- AI Form Assistant
+- AI Chat Assistant
 
 ---
 
-### Step 3 - Review & Save
+# Demo Video
 
-The extracted information is automatically populated into the Lead fields. Review the generated values and save the Lead.
+A complete walkthrough of the framework, architecture, and validation tests can be found here:
 
-<p align="center">
-  <img src="screenshots/step3-autofill.png" width="900">
-</p>
-## Technology Stack
+**Google Drive Link**
 
-- ERPNext v15
-- Frappe Framework v15
-- Python
-- JavaScript (Client Scripts)
-- OCR
+> https://drive.google.com/file/d/11gpGEj8LTWxUJyopDRgycckz2uxB6Rhy/view?usp=sharing
 
 ---
 
-## Architecture
+# Project Architecture
 
 ```
-Lead Form
-     │
-     ▼
-AI Assist Button
-     │
-     ▼
-Client Script
-     │
-     ▼
-Whitelisted API
-     │
-     ▼
-Lead Service
-     │
-     ▼
-File Service
-     │
-     ▼
-OCR Service
-     │
-     ▼
-Populate Lead Fields
+Frontend
+
+framework/
+extensions/
+    form_assistant/
+    chat_assistant/
+
+↓
+
+Backend
+
+applications/
+    form_assistant/
+    chat_assistant/
+
+↓
+
+Shared Components
+
+common/
 ```
 
 ---
 
-## Project Structure
+# Test 1 – Multiple AI Applications
 
-```
-ai_lead_assistant/
-├── api.py
-├── hooks.py
-├── public/
-│   └── js/
-├── services/
-│   ├── lead_service.py
-│   ├── file_service.py
-│   └── ocr_service.py
-```
+The framework supports multiple AI applications running simultaneously on the same ERPNext form.
 
----
+## Lead Form
 
-## Future Improvements
+Both AI applications loaded.
 
-- Duplicate Lead Detection
-- AI-based Lead Scoring
-- Suggested Sales Representative
-- Suggested Industry & Territory
-- Confidence Score for AI Predictions
-- Batch Lead Creation from Multiple Documents
+![](screenshots/TEST1-leadform_2aiapplications.png)
 
----
+### AI Form Assistant
 
-## Installation
+Upload a business card or document for automatic extraction.
 
-Clone the repository into your Frappe Bench.
+![](screenshots/TEST1-leadform_aiform.png)
 
-```bash
-cd frappe-bench
+### Auto-filled Lead
 
-bench get-app https://github.com/<your-github-username>/AI-Lead-Assistant.git
+Lead fields populated automatically using OCR + LLM.
 
-bench --site <site-name> install-app ai_lead_assistant
+![](screenshots/TEST1-leadform_aiform_result.png)
 
-bench migrate
-```
+### AI Chat Assistant
+
+Context-aware AI Chat Assistant.
+
+![](screenshots/TEST1-leadform_aichat.png)
 
 ---
 
-## License
+## Item Form
 
-This project is licensed under the MIT License.
+Both AI applications loaded successfully inside another ERPNext module.
+
+![](screenshots/TEST1-itemform_2aiapplications.png)
+
+### AI Form Assistant
+
+![](screenshots/TEST1-itemform_aiform.png)
+
+### Auto-filled Item
+
+![](screenshots/TEST1-itemform_aiform_result.png)
+
+### AI Chat Assistant
+
+![](screenshots/TEST1-itemform_aichat.png)
+
+---
+
+# Test 2 – Extension Isolation
+
+The framework supports independent loading of AI applications based on the current ERPNext context.
+
+Example configuration:
+
+- AI Form Assistant → Lead
+- AI Chat Assistant → Item
+
+## Lead Form
+
+Only AI Form Assistant is loaded.
+
+![](screenshots/TEST2-leadform_1aiapplication.png)
+
+## Item Form
+
+Only AI Chat Assistant is loaded.
+
+![](screenshots/TEST2-itemform_1aiapplication.png)
+
+---
+
+# Current AI Applications
+
+## AI Form Assistant
+
+- OCR-based document extraction
+- LLM-powered field mapping
+- Dynamic DocType support
+- Automatic ERPNext form population
+
+---
+
+## AI Chat Assistant
+
+- Context-aware chatbot
+- Extension framework integration
+- Modular architecture
+- Ready for future RAG integration
+
+---
+
+# Future Roadmap
+
+- Context-aware AI Chat Assistant
+- Admin configuration for AI applications
+- AI Report Assistant
+- AI Email Assistant
+- AI Workflow Assistant
+- AI Insights Dashboard
+- Additional ERPNext AI Extensions
+
+---
+
+# Author
+
+**Deepankar Senapati**

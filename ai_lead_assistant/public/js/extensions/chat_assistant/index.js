@@ -16,7 +16,7 @@ const ChatAssistant = {
     icon: "comment",
 
     supports(context) {
-        return context.type === "form" ;
+        return context.type === "form";
     },
 
     onRefresh(context, api)  {
