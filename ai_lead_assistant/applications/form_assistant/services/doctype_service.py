@@ -1,6 +1,7 @@
 import frappe
-from ai_lead_assistant.config import AI_EXTRACTABLE_FIELDS
-
+from ai_lead_assistant.applications.form_assistant.config import (
+    AI_EXTRACTABLE_FIELDS,
+)
 SUPPORTED_FIELD_TYPES = {
     "Data",
     "Small Text",
@@ -50,9 +51,11 @@ def get_extractable_fields(doctype: str) -> list[dict]:
         if field.read_only:
             continue
 
-        allowed_fields = AI_EXTRACTABLE_FIELDS.get(doctype, set())
+        # If configured, use only configured fields.
+        # Otherwise, allow all supported fields.
+        allowed_fields = AI_EXTRACTABLE_FIELDS.get(doctype)
 
-        if field.fieldname not in allowed_fields:
+        if allowed_fields is not None and field.fieldname not in allowed_fields:
             continue
 
         ai_fields.append(
@@ -63,5 +66,11 @@ def get_extractable_fields(doctype: str) -> list[dict]:
                 "required": field.reqd,
             }
         )
+
+    print("=" * 60)
+    print("DOCTYPE:", doctype)
+    print("EXTRACTABLE FIELDS:")
+    print(ai_fields)
+    print("=" * 60)
 
     return ai_fields

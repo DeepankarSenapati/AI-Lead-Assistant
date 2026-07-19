@@ -1,7 +1,7 @@
 from azure.ai.documentintelligence import DocumentIntelligenceClient
 from azure.core.credentials import AzureKeyCredential
 
-from ai_lead_assistant.config import (
+from ai_lead_assistant.ai_lead_assistant.common.ai_config import (
     get_azure_document_intelligence_config,
 )
 

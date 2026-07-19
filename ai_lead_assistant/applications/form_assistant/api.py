@@ -1,6 +1,6 @@
 import frappe
 
-from ai_lead_assistant.services import document_service, file_service
+from ai_lead_assistant.applications.form_assistant.services import file_service, document_service
 
 
 @frappe.whitelist()

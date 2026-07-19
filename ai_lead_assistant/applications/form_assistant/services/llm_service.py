@@ -2,9 +2,9 @@ import json
 
 from openai import OpenAI
 
-from ai_lead_assistant.services.schema_service import build_json_schema
-from ai_lead_assistant.config import get_openai_config
-from ai_lead_assistant.services.prompt_service import (
+from ai_lead_assistant.applications.form_assistant.services.schema_service import build_json_schema
+from ai_lead_assistant.ai_lead_assistant.common.ai_config import get_openai_config
+from ai_lead_assistant.applications.form_assistant.services.prompt_service import (
     build_extraction_prompt,
 )
 

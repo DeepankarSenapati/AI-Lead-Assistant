@@ -7,7 +7,7 @@ app_license = "mit"
 
 
 
-doctype_js = {
-    "Lead": "public/js/lead.js"
-}
+app_include_js = [
+    "ai_lead_assistant.bundle.js"
+]
 

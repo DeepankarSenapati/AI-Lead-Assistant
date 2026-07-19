@@ -1,0 +1,7 @@
+export default {
+
+    version:"1.0.0",
+
+    name:"AI Extension Framework"
+
+}

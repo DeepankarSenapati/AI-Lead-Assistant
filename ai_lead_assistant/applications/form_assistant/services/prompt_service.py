@@ -1,4 +1,4 @@
-from ai_lead_assistant.services.doctype_service import get_extractable_fields
+from ai_lead_assistant.applications.form_assistant.services.doctype_service import get_extractable_fields
 
 
 def build_extraction_prompt(
