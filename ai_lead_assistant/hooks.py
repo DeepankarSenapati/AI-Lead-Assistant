@@ -11,3 +11,11 @@ doctype_js = {
     "Lead": "public/js/lead.js"
 }
 
+fixtures = [
+    {
+        "dt": "Custom Field",
+        "filters": [
+            ["name", "=", "Lead-custom_id_document_"]
+        ]
+    }
+]
