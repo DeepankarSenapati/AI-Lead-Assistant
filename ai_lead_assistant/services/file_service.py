@@ -8,7 +8,7 @@ def get_uploaded_file(file_url: str) -> dict:
     """
 
     if not file_url:
-        frappe.throw("Please upload a business card first.")
+        frappe.throw("Please upload a document first.")
 
     file_name, content = get_file(file_url)
 

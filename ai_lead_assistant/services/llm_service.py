@@ -8,10 +8,6 @@ from ai_lead_assistant.services.prompt_service import (
     build_extraction_prompt,
 )
 
-_config = get_openai_config()
-
-_client = OpenAI(api_key=_config["api_key"])
-
 
 def extract_fields(doctype: str, ocr_text: str) -> dict:
     """
@@ -33,9 +29,15 @@ def extract_fields(doctype: str, ocr_text: str) -> dict:
     return _parse_response(response)
 
 
-def _call_openai(prompt: str,schema: dict) -> str:
-    response = _client.responses.create(
-        model=_config["model"],
+def _call_openai(prompt: str, schema: dict) -> str:
+    config = get_openai_config()
+
+    client = OpenAI(
+        api_key=config["api_key"]
+    )
+
+    response = client.responses.create(
+        model=config["model"],
         input=prompt,
         text={
             "format": {

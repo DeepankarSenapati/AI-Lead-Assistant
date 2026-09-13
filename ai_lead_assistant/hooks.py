@@ -6,16 +6,23 @@ app_email = "deepankar066@gmail.com"
 app_license = "mit"
 
 
-
 doctype_js = {
-    "Lead": "public/js/lead.js"
+    "Lead": "public/js/lead.js",
+    "Purchase Receipt": "public/js/purchase_receipt.js",
 }
 
 fixtures = [
     {
         "dt": "Custom Field",
         "filters": [
-            ["name", "=", "Lead-custom_id_document_"]
+            [
+                "name",
+                "in",
+                [
+                    "Lead-custom_id_document_",
+                    "Purchase Receipt-custom_receipt_document"
+                ]
+            ]
         ]
     }
 ]

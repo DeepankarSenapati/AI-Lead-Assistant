@@ -14,5 +14,23 @@ AI_EXTRACTABLE_FIELDS = {
         "city",
         "state",
         "country",
+    },
+
+    "Purchase Receipt": {
+        "supplier",
+        "posting_date",
+        "supplier_delivery_note",
+    },
+}
+
+
+AI_EXTRACTABLE_CHILD_FIELDS = {
+    "Purchase Receipt": {
+        "items": {
+            "description",
+            "qty",
+            "uom",
+            "rate",
+        }
     }
 }
