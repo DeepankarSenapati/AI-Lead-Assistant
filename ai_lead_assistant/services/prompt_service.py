@@ -53,9 +53,37 @@ def build_extraction_prompt(
 
     child_field_list = "\n\n".join(child_field_sections)
 
+    # Address instructions for Lead
+    address_section = ""
+
+    if doctype == "Lead":
+        address_section = """
+Address information:
+
+If the OCR text contains a physical or postal address, extract it into
+the "address" object.
+
+Address fields:
+
+- address_line1: Main address information such as house/building number,
+  street, road, locality, or area.
+- address_line2: Additional address information when explicitly present.
+- city: City or town.
+- state: State or province.
+- pincode: Postal/PIN code.
+- country: Country.
+
+Extract only information explicitly present in the OCR text.
+Do not invent, infer, or complete missing address information.
+
+If no address is present, return null for the "address" object.
+"""
+
     json_template_parts = []
 
+    # Parent fields
     for field in fields:
+
         field_type = field["fieldtype"]
 
         if field_type in ("Int", "Float", "Currency"):
@@ -67,6 +95,7 @@ def build_extraction_prompt(
             f'  "{field["fieldname"]}": {example_value}'
         )
 
+    # Child tables
     for table_name, table in child_fields.items():
 
         child_template = "{\n" + ",\n".join(
@@ -83,6 +112,12 @@ def build_extraction_prompt(
             f'  "{table_name}": [\n'
             f'    {child_template}\n'
             f'  ]'
+        )
+
+    # Address object
+    if doctype == "Lead":
+        json_template_parts.append(
+            '  "address": null'
         )
 
     json_template = "{\n" + ",\n".join(json_template_parts) + "\n}"
@@ -109,6 +144,8 @@ Parent ERPNext fields:
 Child table fields:
 
 {child_field_list}
+
+{address_section}
 
 Rules:
 

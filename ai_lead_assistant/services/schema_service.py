@@ -52,6 +52,43 @@ def build_json_schema(doctype: str) -> dict:
 
         required.append(field["fieldname"])
 
+
+    if doctype == "Lead":
+        properties["address"] = {
+            "type": ["object", "null"],
+            "properties": {
+                "address_line1": {
+                    "type": ["string", "null"]
+                },
+                "address_line2": {
+                    "type": ["string", "null"]
+                },
+                "city": {
+                    "type": ["string", "null"]
+                },
+                "state": {
+                    "type": ["string", "null"]
+                },
+                "pincode": {
+                    "type": ["string", "null"]
+                },
+                "country": {
+                    "type": ["string", "null"]
+                },
+            },
+            "required": [
+                "address_line1",
+                "address_line2",
+                "city",
+                "state",
+                "pincode",
+                "country",
+            ],
+            "additionalProperties": False,
+        }
+
+        required.append("address")
+
     # Child tables
     for table_name, table in child_fields.items():
 

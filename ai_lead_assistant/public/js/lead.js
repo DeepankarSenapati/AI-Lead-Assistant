@@ -19,6 +19,7 @@ frappe.ui.form.on("Lead", {
                     args: {
                         file_url: file_url,
                         doctype: "Lead",
+                        document_name: frm.doc.name,
                     },
                 });
 
