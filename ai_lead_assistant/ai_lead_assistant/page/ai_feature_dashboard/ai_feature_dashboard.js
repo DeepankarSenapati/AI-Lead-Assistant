@@ -72,9 +72,13 @@ class FeatureDashboard {
 
     get feature() { return this.data.features.find(item => item.id === this.featureId); }
     moduleLabel(name) { return name === "Accounts" ? __("Accounting") : __(name); }
-    supports(name) { return this.feature.forms === null || this.feature.forms.includes(name); }
-    rule(type, name) {
-        return this.data.rules.find(row => row.feature === this.featureId && row.target_type === type && row.target === name);
+    supports(name, feature = this.feature) { return feature.forms === null || feature.forms.includes(name); }
+    rule(type, name, feature = this.feature) {
+        return this.data.rules.find(row => row.feature === feature.id && row.target_type === type && row.target === name);
+    }
+    effective(feature, row) {
+        const override = this.rule("DocType", row.name, feature) || this.rule("Module Def", row.module, feature);
+        return override ? Boolean(override.enabled) : feature.default_enabled;
     }
     get moduleEnabled() {
         const rule = this.rule("Module Def", this.module);
@@ -91,7 +95,11 @@ class FeatureDashboard {
                 .html(frappe.utils.icon(feature.icon, "md")).appendTo(button);
             const text = $("<span>").appendTo(button);
             $("<strong>").text(__(feature.label)).appendTo(text);
-            $("<small>").text(__(feature.description)).appendTo(text);
+            $("<small>", { class: "ai-feature-description" }).text(__(feature.description)).appendTo(text);
+            const compatible = this.data.forms.filter(row => this.supports(row.name, feature));
+            const active = compatible.filter(row => this.effective(feature, row)).length;
+            $("<span>", { class: "ai-assigned-count" })
+                .text(__("On {0} of {1} forms", [active, compatible.length])).appendTo(text);
         }
         this.renderModules();
         const heading = this.root.find(".ai-module-heading").empty();
@@ -140,7 +148,7 @@ class FeatureDashboard {
         for (const { name } of forms) {
             const compatible = this.supports(name);
             const rule = this.rule("DocType", name);
-            const active = compatible && (rule ? Boolean(rule.enabled) : this.moduleEnabled);
+            const active = compatible && this.effective(this.feature, { name, module: this.module });
             const row = $("<div>", { class: "ai-form-row" }).appendTo(list);
             const copy = $("<div>", { class: "ai-row-copy" }).appendTo(row);
             const title = $("<strong>").appendTo(copy);
