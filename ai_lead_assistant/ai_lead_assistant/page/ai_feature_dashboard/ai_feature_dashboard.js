@@ -28,6 +28,11 @@ class FeatureDashboard {
         `);
         this.root.on("click", "[data-feature]", event => {
             this.featureId = event.currentTarget.dataset.feature;
+            const compatible = this.data.forms.filter(row => this.supports(row.name));
+            if (compatible.length && !compatible.some(row => row.module === this.module)) {
+                this.module = compatible[0].module;
+            }
+            this.root.find(".ai-module-search, .ai-form-search").val("");
             this.render();
         });
         this.root.on("click", "[data-module]", event => {
@@ -39,17 +44,21 @@ class FeatureDashboard {
         this.root.on("input", ".ai-form-search", () => this.renderForms());
         this.root.on("click", "[data-state]", event => this.save(event.currentTarget));
         this.root.on("click", ".ai-retry", () => this.load());
+        $(document).on("ai-feature-assignments-refresh", () => {
+            if (!this.saving && frappe.get_route()[0] === "ai-feature-dashboard") this.load(true);
+        });
     }
 
-    async load() {
+    async load(onlyIfChanged = false) {
         const request = this.request = {};
         if (!this.data) this.status(__("Loading assignments…"));
         try {
             const { message } = await frappe.call("ai_lead_assistant.framework.assignments.get_dashboard");
             if (request !== this.request) return;
+            if (onlyIfChanged && this.data && JSON.stringify(this.data) === JSON.stringify(message)) return;
             this.data = message;
             this.modules = [...new Set(message.forms.map(row => row.module))];
-            this.featureId ||= message.features[0]?.id;
+            if (!message.features.some(feature => feature.id === this.featureId)) this.featureId = message.features[0]?.id;
             this.module ||= this.modules.includes("CRM") ? "CRM" : this.modules[0];
             this.status("");
             this.render();
@@ -112,7 +121,9 @@ class FeatureDashboard {
         if (!this.data) return;
         const term = this.root.find(".ai-module-search").val().trim().toLowerCase();
         const list = this.root.find(".ai-modules").empty();
-        for (const name of this.modules) {
+        const compatibleModules = new Set(this.data.forms.filter(row => this.supports(row.name)).map(row => row.module));
+        const sorted = [...this.modules].sort((a, b) => Number(compatibleModules.has(b)) - Number(compatibleModules.has(a)));
+        for (const name of sorted) {
             if (!(name + " " + this.moduleLabel(name)).toLowerCase().includes(term)) continue;
             $("<button>", { type: "button", "data-module": name, "aria-pressed": String(name === this.module) })
                 .text(this.moduleLabel(name)).appendTo(list);
@@ -125,13 +136,20 @@ class FeatureDashboard {
         const term = this.root.find(".ai-form-search").val().trim().toLowerCase();
         const list = this.root.find(".ai-forms").empty();
         const forms = this.data.forms.filter(row => row.module === this.module && __(row.name).toLowerCase().includes(term));
+        forms.sort((a, b) => Number(this.supports(b.name)) - Number(this.supports(a.name)));
         for (const { name } of forms) {
             const compatible = this.supports(name);
             const rule = this.rule("DocType", name);
             const active = compatible && (rule ? Boolean(rule.enabled) : this.moduleEnabled);
             const row = $("<div>", { class: "ai-form-row" }).appendTo(list);
             const copy = $("<div>", { class: "ai-row-copy" }).appendTo(row);
-            $("<strong>").text(__(name)).appendTo(copy);
+            const title = $("<strong>").appendTo(copy);
+            if (compatible && frappe.model.can_read(name)) {
+                $("<a>", { href: "/app/" + encodeURIComponent(frappe.router.slug(name)), target: "_blank",
+                    rel: "noopener noreferrer", title: __("Open {0} records", [__(name)]) }).text(__(name)).appendTo(title);
+            } else {
+                title.text(__(name));
+            }
             const reason = compatible ? (rule ? __("Form override") : __("Uses module default")) : __(this.feature.reason);
             $("<small>", { class: compatible ? "" : "ai-warning" }).text(reason).appendTo(copy);
             if (compatible && rule) {
@@ -164,6 +182,8 @@ class FeatureDashboard {
                 args: { feature, target_type: type, target, state } });
             $(document).trigger("ai-feature-assignment-updated");
             frappe.show_alert({ message: __("Assignment saved"), indicator: "green" });
+        } catch (error) {
+            frappe.show_alert({ message: __("Could not save this assignment."), indicator: "red" });
         } finally {
             this.saving = false;
             await this.load();

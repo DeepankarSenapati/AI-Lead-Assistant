@@ -1,3 +1,4 @@
+import "../assignment_changes";
 import { createFormContext } from "../context";
 import registry from "../registry";
 
@@ -12,10 +13,7 @@ class FormAdapter {
         const refreshActiveForm = () => {
             if (frappe.get_route()[0] === "Form" && window.cur_frm) this.handle("refresh", cur_frm);
         };
-        $(document).on("ai-feature-assignment-updated", refreshActiveForm);
-        $(document).on("app_ready", () => {
-            frappe.realtime.on("ai_feature_assignment_changed", refreshActiveForm);
-        });
+        $(document).on("ai-feature-assignments-refresh", refreshActiveForm);
     }
 
     async handle(event, frm) {

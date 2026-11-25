@@ -1,12 +1,12 @@
 import registry from "../framework/registry";
-
-import FormAssistantExtension from "./form_assistant";
 import ChatAssistant from "./chat_assistant";
+import FormAssistant from "./form_assistant";
+import { insightExtension } from "./insight";
 
 export function registerExtensions() {
-    registry.register(FormAssistantExtension);
-    console.log("Registering Form Assistant");
-
+    registry.register(FormAssistant);
     registry.register(ChatAssistant);
-    console.log("Registering Chat Assistant");
+    for (const feature of frappe.boot.ai_insight_features || []) {
+        registry.register(insightExtension(feature));
+    }
 }

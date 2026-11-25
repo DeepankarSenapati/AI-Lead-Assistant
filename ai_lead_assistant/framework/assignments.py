@@ -14,6 +14,7 @@ def erp_modules():
 
 def boot_session(bootinfo):
     bootinfo.ai_extension_modules = erp_modules()
+    bootinfo.ai_insight_features = [f.client_spec(key) for key, f in FEATURES.items() if f.analyzer]
 
 
 def form_module(doctype):
@@ -83,12 +84,7 @@ def get_dashboard():
         fields=["name", "module"], order_by="module, name",
     )
     return {
-        "features": [
-            dict(id=key, label=feature.label, description=feature.description, icon=feature.icon,
-                 forms=sorted(feature.forms) if feature.forms is not None else None,
-                 reason=feature.unavailable_reason, default_enabled=feature.default_enabled)
-            for key, feature in FEATURES.items()
-        ],
+        "features": [feature.client_spec(key) for key, feature in FEATURES.items()],
         "forms": forms,
         "rules": frappe.get_all(RULE, fields=["feature", "target_type", "target", "enabled"]),
     }
