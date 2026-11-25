@@ -117,13 +117,19 @@ def _name_match(own, other):
 	shared, total = [], 0.0
 	for tok in a:
 		best = max(b, key=lambda o: SequenceMatcher(None, tok, o).ratio())
-		sim = 1.0 if tok == best else (SequenceMatcher(None, tok, best).ratio() if min(len(tok), len(best)) >= 4 else 0.0)
+		sim = (
+			1.0
+			if tok == best
+			else (SequenceMatcher(None, tok, best).ratio() if min(len(tok), len(best)) >= 4 else 0.0)
+		)
 		if sim >= 0.85:
 			shared.append(tok if tok == best else f"{tok}~{best}")
 			total += sim
 	if not shared:
 		return 0.0, []
-	score = max(total / max(len(a), len(b)), SequenceMatcher(None, " ".join(sorted(a)), " ".join(sorted(b))).ratio())
+	score = max(
+		total / max(len(a), len(b)), SequenceMatcher(None, " ".join(sorted(a)), " ".join(sorted(b))).ratio()
+	)
 	# A single distinctive word is weak evidence: demand near-identity.
 	return (score, shared) if score >= (WARN_SCORE if min(len(a), len(b)) == 1 else INFO_SCORE) else (0.0, [])
 
@@ -153,7 +159,10 @@ def analyze(doc, query=None):
 	doctype = doc.get("doctype")
 	cfg = CONFIG.get(doctype)
 	if not cfg:
-		return {"summary": "Duplicate finder supports Lead, Customer, Supplier and Item only.", "findings": []}
+		return {
+			"summary": "Duplicate finder supports Lead, Customer, Supplier and Item only.",
+			"findings": [],
+		}
 
 	if not frappe.has_permission(doctype, "read"):
 		return {"summary": "You need read access to search these records.", "findings": []}
@@ -188,11 +197,14 @@ def analyze(doc, query=None):
 		}
 
 	# Candidates: only permitted fields are queried or fetched.
-	fields = ["name"] + name_fields + id_fields
+	fields = ["name", *name_fields, *id_fields]
 	if meta.has_field("disabled") and _readable(meta, ["disabled"]):
 		fields.append("disabled")
-	identifier_filters = [condition for (field, key), raw in own_ids.items()
-		for condition in _id_filters(field, cfg["ids"][field], raw, key)]
+	identifier_filters = [
+		condition
+		for (field, key), raw in own_ids.items()
+		for condition in _id_filters(field, cfg["ids"][field], raw, key)
+	]
 	name_filters = []
 	for field, text in own_names.items():
 		for tok in sorted(_words(text), key=len, reverse=True)[:MAX_TOKENS]:
@@ -202,12 +214,20 @@ def analyze(doc, query=None):
 	try:
 		rows, truncated = {}, False
 		# Name matches must never use up the identifier query's result budget.
-		for conditions, order in ((identifier_filters, "modified desc"), (name_filters, "modified desc"),
-				(name_filters, "creation asc")):
+		for conditions, order in (
+			(identifier_filters, "modified desc"),
+			(name_filters, "modified desc"),
+			(name_filters, "creation asc"),
+		):
 			if not conditions:
 				continue
 			found = frappe.get_list(
-				doctype, fields=fields, filters=filters, or_filters=conditions, order_by=order, limit_page_length=FETCH_LIMIT
+				doctype,
+				fields=fields,
+				filters=filters,
+				or_filters=conditions,
+				order_by=order,
+				limit_page_length=FETCH_LIMIT,
 			)
 			truncated = truncated or len(found) >= FETCH_LIMIT
 			rows.update({r["name"]: r for r in found})
@@ -249,7 +269,7 @@ def analyze(doc, query=None):
 			}
 		)
 
-	notes.append(f"Compared {len(rows)} accessible candidate records.")
+	notes.append(f"Compared {len(rows)} accessible candidate {'record' if len(rows) == 1 else 'records'}.")
 	if truncated:
 		notes.append(f"A search hit the {FETCH_LIMIT}-row limit, so further matches may exist.")
 	if len(matches) > MAX_FINDINGS:

@@ -20,8 +20,10 @@ REFS = (  # (label, doctype, parent field, row field)
 	("PR", "Purchase Receipt", "purchase_receipt", "pr_detail"),
 )
 
-SCOPE = ("This review compares this invoice with its explicitly linked source rows. "
-	"Prior billings, subsequent returns, taxes and supplier billing tolerances are outside this comparison.")
+SCOPE = (
+	"This review compares this invoice with its explicitly linked source rows. "
+	"Prior billings, subsequent returns, taxes and supplier billing tolerances are outside this comparison."
+)
 
 
 def analyze(doc, query=None):
@@ -78,8 +80,10 @@ class _Review:
 				if p and d:
 					groups.setdefault((label, dt, p, d), []).append(l)
 				elif p or d:
-					self.add(f"{label} reference incomplete (row {l.idx})",
-						f"{pf}={p or 'empty'}, {df}={d or 'empty'}; cannot be matched to a source row.")
+					self.add(
+						f"{label} reference incomplete (row {l.idx})",
+						f"{pf}={p or 'empty'}, {df}={d or 'empty'}; cannot be matched to a source row.",
+					)
 			if not has["PO"] and not has["PR"]:
 				self.no_ref += 1
 			elif has["PO"] and not has["PR"]:
@@ -96,19 +100,30 @@ class _Review:
 		if parent == "skipped":
 			return
 		if parent is None:
-			self.add(f"{label} {pname} not readable",
-				f"Rows {rows}: the linked record could not be opened with your permissions.")
+			self.add(
+				f"{label} {pname} not readable",
+				f"Rows {rows}: the linked record could not be opened with your permissions.",
+			)
 			return
 		ref = next((r for r in (parent.get("items") or []) if r.name == detail), None)
 		if ref is None:
-			self.add(f"{label} row not found",
-				f"Rows {rows} cite row {detail}, absent from {pname} (or hidden by permissions).", dt, pname)
+			self.add(
+				f"{label} row not found",
+				f"Rows {rows} cite row {detail}, absent from {pname} (or hidden by permissions).",
+				dt,
+				pname,
+			)
 			return
 		d, bad = self.doc, []
 
 		if parent.get("docstatus") != 1:
 			state = {0: "draft", 2: "cancelled"}.get(parent.get("docstatus"), "not submitted")
-			self.add(f"{label} source is {state}", f"Rows {rows} refer to {pname}. Check the document status before comparing quantities.", dt, pname)
+			self.add(
+				f"{label} source is {state}",
+				f"Rows {rows} refer to {pname}. Check the document status before comparing quantities.",
+				dt,
+				pname,
+			)
 			return
 		self.checked += 1
 		for f in ("company", "supplier"):
@@ -117,11 +132,17 @@ class _Review:
 				bad.append(f"{f} {a} on invoice vs {b} on source")
 			elif not (a and b):
 				self.hidden += 1
-		if label == "PR" and parent.get("is_return") is not None and bool(parent.get("is_return")) != self.is_return:
+		if (
+			label == "PR"
+			and parent.get("is_return") is not None
+			and bool(parent.get("is_return")) != self.is_return
+		):
 			bad.append(f"return flag: invoice {self.is_return}, receipt {bool(parent.get('is_return'))}")
 		if label == "PR" and d.get("update_stock"):
-			bad.append("Update Stock is on while billing a Purchase Receipt; stock effect is not evaluated "
-				"here, please verify manually")
+			bad.append(
+				"Update Stock is on while billing a Purchase Receipt; stock effect is not evaluated "
+				"here, please verify manually"
+			)
 
 		same_cur = bool(d.get("currency")) and d.get("currency") == parent.get("currency")
 		ref_q, ref_u = norm_qty(ref), ref.get("stock_uom")
@@ -145,9 +166,11 @@ class _Review:
 			self.price_check(line, ref, same_cur and keys_match, bad)
 		if comparable:
 			if mine > ref_q + QTY_EPS:
-				bad.append("this invoice alone bills more than the source row: "
+				bad.append(
+					"this invoice alone bills more than the source row: "
 					+ "; ".join(f"row {l.idx} {fmt_qty(l)}" for l in lines)
-					+ f" = {mine:g} {ref_u} vs source {fmt_qty(ref)}")
+					+ f" = {mine:g} {ref_u} vs source {fmt_qty(ref)}"
+				)
 		else:
 			self.qty_skipped += 1
 		if bad:
@@ -160,42 +183,77 @@ class _Review:
 		a, b = unit_price(l), unit_price(ref)
 		if a is None or b is None:
 			self.price_skipped += 1
-		elif abs(a - b) > max(0.5 * 10 ** -l.precision("rate") / l.conversion_factor,
-				0.5 * 10 ** -ref.precision("rate") / ref.conversion_factor) + 1e-12:
-			bad.append(f"row {l.idx} unit price {a:.6g} vs source {b:.6g} {self.doc.currency}/{ref.stock_uom} "
-				f"(invoice rate {l.get('rate')} per {l.get('uom') or '?'})")
+		elif (
+			abs(a - b)
+			> max(
+				0.5 * 10 ** -l.precision("rate") / l.conversion_factor,
+				0.5 * 10 ** -ref.precision("rate") / ref.conversion_factor,
+			)
+			+ 1e-12
+		):
+			bad.append(
+				f"row {l.idx} unit price {a:.6g} vs source {b:.6g} {self.doc.currency}/{ref.stock_uom} "
+				f"(invoice rate {l.get('rate')} per {l.get('uom') or '?'})"
+			)
 
 	def result(self, query):
 		n, shown = len(self.issues), self.issues[:MAX_FINDINGS]
 		if n > MAX_FINDINGS:
-			shown = shown[: MAX_FINDINGS - 1] + [{"title": f"{n - MAX_FINDINGS + 1} more finding(s) omitted",
-				"detail": "Output is capped.", "level": "info"}]
-		summary = f"Reviewed {len(self.lines)} invoice lines against {self.checked} linked order or receipt rows."
+			shown = shown[: MAX_FINDINGS - 1] + [
+				{
+					"title": f"{n - MAX_FINDINGS + 1} more finding(s) omitted",
+					"detail": "Output is capped.",
+					"level": "info",
+				}
+			]
+		lines = "line" if len(self.lines) == 1 else "lines"
+		rows = "row" if self.checked == 1 else "rows"
+		summary = f"Reviewed {len(self.lines)} invoice {lines} against {self.checked} linked order or receipt {rows}."
 		if n:
 			summary += f" Findings to review: {n}."
 		if self.no_ref or self.po_only or self.pr_only:
-			shown.append({"title": "Link coverage", "level": "info", "detail": (
-				f"Without order or receipt links: {self.no_ref}. Order only: {self.po_only}. "
-				f"Receipt only: {self.pr_only}. Unlinked quantities cannot be compared."
-			)})
-		if self.checked and not any((n, self.qty_skipped, self.price_skipped, self.hidden,
-				self.docs_skipped, self.lines_cut)):
-			shown.append({"title": "No variance on the compared rows", "level": "success",
-				"detail": "Billed quantities fit within the linked rows and comparable unit prices agree."})
+			shown.append(
+				{
+					"title": "Link coverage",
+					"level": "info",
+					"detail": (
+						f"Without order or receipt links: {self.no_ref}. Order only: {self.po_only}. "
+						f"Receipt only: {self.pr_only}. Unlinked quantities cannot be compared."
+					),
+				}
+			)
+		if self.checked and not any(
+			(n, self.qty_skipped, self.price_skipped, self.hidden, self.docs_skipped, self.lines_cut)
+		):
+			shown.append(
+				{
+					"title": "No variance on the compared rows",
+					"level": "success",
+					"detail": "Billed quantities fit within the linked rows and comparable unit prices agree.",
+				}
+			)
 		notes = [SCOPE]
 		if self.is_return:
 			notes.append("Return invoice: quantity comparison not performed (negative quantities).")
 		if self.qty_skipped:
-			notes.append(f"{self.qty_skipped} source group(s) not quantity-compared (incompatible UOM/item, "
-				"non-positive or missing quantity); no arithmetic was done on them.")
+			notes.append(
+				f"{self.qty_skipped} source group(s) not quantity-compared (incompatible UOM/item, "
+				"non-positive or missing quantity); no arithmetic was done on them."
+			)
 		if self.price_skipped:
-			notes.append(f"{self.price_skipped} line(s) not price-compared (different/unknown currency, UOM or values).")
+			notes.append(
+				f"{self.price_skipped} line(s) not price-compared (different/unknown currency, UOM or values)."
+			)
 		if self.hidden:
-			notes.append(f"{self.hidden} comparison(s) skipped because a field was empty or hidden by permissions.")
+			notes.append(
+				f"{self.hidden} comparison(s) skipped because a field was empty or hidden by permissions."
+			)
 		if self.lines_cut:
 			notes.append(f"{self.lines_cut} line(s) beyond the {MAX_LINES}-line cap were not reviewed.")
 		if self.docs_skipped:
-			notes.append(f"{len(self.docs_skipped)} linked document(s) beyond the {MAX_LINKED_DOCS}-document cap were not opened.")
+			notes.append(
+				f"{len(self.docs_skipped)} linked document(s) beyond the {MAX_LINKED_DOCS}-document cap were not opened."
+			)
 		return _out(summary, shown, " ".join(notes))
 
 
@@ -216,5 +274,8 @@ def unit_price(row):
 def fmt_qty(row):
 	"""Show actual entered quantity/UOM and the stock-UOM equivalent."""
 	q = norm_qty(row)
-	return f"{row.get('qty'):g} {row.get('uom') or '?'} ({q:g} {row.get('stock_uom') or '?'})" \
-		if row.get("qty") is not None and q is not None else "quantity unavailable"
+	return (
+		f"{row.get('qty'):g} {row.get('uom') or '?'} ({q:g} {row.get('stock_uom') or '?'})"
+		if row.get("qty") is not None and q is not None
+		else "quantity unavailable"
+	)

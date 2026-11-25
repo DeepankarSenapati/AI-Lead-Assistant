@@ -13,7 +13,7 @@ A Frappe v15 app for assigning assistants to ERPNext forms. Open **AI Extensions
 
 The four review and search tools run locally. CRM Handoff Brief also offers **Draft handoff with OpenAI** when credentials and source notes or tasks are available. Clicking that button sends the displayed excerpts to the configured account. Reviews and drafts do not update or submit business documents.
 
-Feature assignments are stored per site. New installations start with Form Assistant on its mapped forms and the other features opt-in. Each feature declares its compatible DocTypes in the extension catalog. Source access follows the current user’s Frappe permissions.
+Feature assignments are stored per site. New installations start with Form Assistant on its mapped forms and leave the other features available to assign. Each feature declares its compatible DocTypes in the extension catalog. Source access follows the current user’s Frappe permissions.
 
 ## Lead extraction walkthrough
 

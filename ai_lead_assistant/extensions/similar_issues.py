@@ -10,6 +10,7 @@ import re
 from collections import Counter
 
 import frappe
+
 from ai_lead_assistant.extensions.insight_access import plain_text
 
 DONE_STATUSES = ["Resolved", "Closed"]
@@ -25,14 +26,16 @@ EXCERPT_CHARS = 400
 WEIGHTS = {"subject": 3.0, "description": 1.0, "resolution_details": 0.7}
 K1, B, ID_BOOST = 1.5, 0.75, 1.5
 
-STOPWORDS = frozenset("""
+STOPWORDS = frozenset(
+	"""
 a about after again all also am an and any are as at be been before but by can cannot could did do does
 doing done for from get got had has have having he her here how i if in into is it its just may me more
 my no not of off on once only or our out over please same she should so some such than that the their
 them then there these they this those to too under until up us was we were what when where which while
 who why will with would you your hi hello thanks thank regards dear issue issues ticket support team
 error errors problem problems fail failed failing failure unable cannot working work help need urgent
-""".split())
+""".split()
+)
 
 TOKEN_RE = re.compile(r"\w+(?:[.\-/:@]\w+)*")
 SPLIT_RE = re.compile(r"[\W_]+")
@@ -43,7 +46,13 @@ def stem(word):
 	"""Light suffix normalisation for ASCII words (not a full stemmer)."""
 	if not word.isascii() or word.endswith("ss"):
 		return word
-	for suffix, repl, min_len in (("ies", "y", 5), ("ing", "", 6), ("ed", "", 5), ("es", "", 5), ("s", "", 4)):
+	for suffix, repl, min_len in (
+		("ies", "y", 5),
+		("ing", "", 6),
+		("ed", "", 5),
+		("es", "", 5),
+		("s", "", 4),
+	):
 		if word.endswith(suffix) and len(word) >= min_len:
 			return word[: -len(suffix)] + repl
 	return word
@@ -93,13 +102,21 @@ def _fetch_candidates(query_terms, exclude, allowed):
 	if like_terms and searchable:
 		or_filters = [["Issue", f, "like", f"%{t}%"] for t in like_terms for f in searchable]
 		rows = frappe.get_list(
-			"Issue", fields=fields, filters=filters, or_filters=or_filters,
-			order_by="modified desc", limit_page_length=TERM_CANDIDATE_LIMIT,
+			"Issue",
+			fields=fields,
+			filters=filters,
+			or_filters=or_filters,
+			order_by="modified desc",
+			limit_page_length=TERM_CANDIDATE_LIMIT,
 		)
 		truncated = len(rows) >= TERM_CANDIDATE_LIMIT
 		pool.update({r["name"]: r for r in rows})
 	recent = frappe.get_list(
-		"Issue", fields=fields, filters=filters, order_by="modified desc", limit_page_length=RECENT_LIMIT,
+		"Issue",
+		fields=fields,
+		filters=filters,
+		order_by="modified desc",
+		limit_page_length=RECENT_LIMIT,
 	)
 	pool.update({r["name"]: r for r in recent})
 	return list(pool.values()), {row["name"] for row in recent}, truncated
@@ -135,7 +152,13 @@ def _rank(rows, query_terms, baseline_names):
 			if not f:
 				continue
 			idf = math.log(1 + (n - df[term] + 0.5) / (df[term] + 0.5))
-			part = (ID_BOOST if term in ids else 1.0) * idf * f * (K1 + 1) / (f + K1 * (1 - B + B * length / avg_len))
+			part = (
+				(ID_BOOST if term in ids else 1.0)
+				* idf
+				* f
+				* (K1 + 1)
+				/ (f + K1 * (1 - B + B * length / avg_len))
+			)
 			score += part * (1 + 0.25 * math.log(qn))
 			matched.append((part, surface[term], term in ids, where[term]))
 		# Require an identifier hit or at least two distinct terms: one generic word is not a match.
@@ -183,7 +206,10 @@ def analyze(doc, query=None):
 
 	allowed = set(frappe.get_meta("Issue").get_permitted_fieldnames()) | {"name", "modified"}
 	if "status" not in allowed:
-		return {"summary": "Status is hidden from your role, so no similar-issue search was run.", "findings": []}
+		return {
+			"summary": "Status is hidden from your role, so no similar-issue search was run.",
+			"findings": [],
+		}
 
 	try:
 		rows, baseline, truncated = _fetch_candidates(query_terms, doc.get("name"), allowed)
@@ -191,7 +217,7 @@ def analyze(doc, query=None):
 		return {"summary": "You do not have permission to read Issues, so no search was run.", "findings": []}
 
 	scope = (
-		f"Compared {len(rows)} resolved/closed Issues you can read, using words from {source_label}. "
+		f"Compared {len(rows)} resolved or closed {'case' if len(rows) == 1 else 'cases'} using words from {source_label}. "
 		"Older Issues sharing none of the key terms were not checked."
 	)
 	if truncated:

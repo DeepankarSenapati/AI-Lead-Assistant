@@ -99,7 +99,8 @@ class FeatureDashboard {
             const compatible = this.data.forms.filter(row => this.supports(row.name, feature));
             const active = compatible.filter(row => this.effective(feature, row)).length;
             $("<span>", { class: "ai-assigned-count" })
-                .text(__("On {0} of {1} forms", [active, compatible.length])).appendTo(text);
+                .text(compatible.length === 1 ? __("On {0} of 1 form", [active]) :
+                    __("On {0} of {1} forms", [active, compatible.length])).appendTo(text);
         }
         this.renderModules();
         const heading = this.root.find(".ai-module-heading").empty();
