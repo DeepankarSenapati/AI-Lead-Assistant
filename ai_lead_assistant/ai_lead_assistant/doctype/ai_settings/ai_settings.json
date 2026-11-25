@@ -17,33 +17,32 @@
   {
    "fieldname": "azure_section",
    "fieldtype": "Section Break",
-   "label": "Azure Document Intelligence"
+   "label": "Azure Document Intelligence",
+   "description": "OCR for AI Form Assistant."
   },
   {
    "fieldname": "azure_document_intelligence_endpoint",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Endpoint",
-   "reqd": 1
+   "label": "Endpoint"
   },
   {
    "fieldname": "azure_document_intelligence_key",
    "fieldtype": "Password",
    "in_list_view": 1,
-   "label": "API Key",
-   "reqd": 1
+   "label": "API Key"
   },
   {
    "fieldname": "openai_section",
    "fieldtype": "Section Break",
-   "label": "OpenAI"
+   "label": "OpenAI",
+   "description": "Used by AI Form Assistant and optional CRM handoff drafts."
   },
   {
    "fieldname": "openai_api_key",
    "fieldtype": "Password",
    "in_list_view": 1,
-   "label": "API Key",
-   "reqd": 1
+   "label": "API Key"
   },
   {
    "default": "gpt-4.1-mini",
@@ -56,7 +55,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-09-13 10:33:42.959765",
+ "modified": "2026-11-25 14:05:00.000000",
  "modified_by": "Administrator",
  "module": "AI Lead Assistant",
  "name": "AI Settings",

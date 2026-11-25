@@ -102,11 +102,11 @@ def _fetch_candidates(query_terms, exclude, allowed):
 		"Issue", fields=fields, filters=filters, order_by="modified desc", limit_page_length=RECENT_LIMIT,
 	)
 	pool.update({r["name"]: r for r in recent})
-	return list(pool.values()), truncated
+	return list(pool.values()), {row["name"] for row in recent}, truncated
 
 
-def _rank(rows, query_terms):
-	"""BM25 over weighted fields; IDF is computed on the candidate pool."""
+def _rank(rows, query_terms, baseline_names):
+	"""Weight terms by frequency in recent cases sampled independently of the query."""
 	q_tf = Counter(t for t, _, _ in query_terms)
 	surface = {t: s for t, s, _ in query_terms}
 	ids = {t for t, _, ident in query_terms if ident}
@@ -122,9 +122,10 @@ def _rank(rows, query_terms):
 	if not docs:
 		return []
 
-	n = len(docs)
-	avg_len = sum(d[2] for d in docs) / n or 1.0
-	df = Counter(t for _, tf, _, _ in docs for t in q_tf if t in tf)
+	baseline = [d for d in docs if d[0]["name"] in baseline_names] or docs
+	n = len(baseline)
+	avg_len = sum(d[2] for d in baseline) / n or 1.0
+	df = Counter(t for _, tf, _, _ in baseline for t in q_tf if t in tf)
 
 	ranked = []
 	for row, tf, length, where in docs:
@@ -185,7 +186,7 @@ def analyze(doc, query=None):
 		return {"summary": "Status is hidden from your role, so no similar-issue search was run.", "findings": []}
 
 	try:
-		rows, truncated = _fetch_candidates(query_terms, doc.get("name"), allowed)
+		rows, baseline, truncated = _fetch_candidates(query_terms, doc.get("name"), allowed)
 	except frappe.PermissionError:
 		return {"summary": "You do not have permission to read Issues, so no search was run.", "findings": []}
 
@@ -196,7 +197,7 @@ def analyze(doc, query=None):
 	if truncated:
 		scope += " Matches hit the row cap (newest first); add specific terms to narrow."
 
-	ranked = _rank(rows, query_terms)
+	ranked = _rank(rows, query_terms, baseline)
 	if not ranked:
 		return {"summary": "No similar resolved or closed Issues found.", "findings": [], "note": scope}
 

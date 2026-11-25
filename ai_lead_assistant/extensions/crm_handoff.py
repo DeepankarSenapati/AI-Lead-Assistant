@@ -28,7 +28,7 @@ def notes_for_brief(doc):
         rank = (position == 0, bool(FOLLOW_UP.search(sentence)), -position)
         ranked.append((rank, position, note.get("added_on"), sentence))
     selected, seen = [], set()
-    for _, position, date, sentence in sorted(ranked, reverse=True):
+    for _rank, position, date, sentence in sorted(ranked, reverse=True):
         if sentence.casefold() in seen:
             continue
         seen.add(sentence.casefold())
@@ -39,10 +39,12 @@ def notes_for_brief(doc):
         "title": _("CRM note · {0}").format(formatdate(date)) if date else _("CRM note"),
         "detail": sentence if len(sentence) <= 360 else sentence[:357].rstrip() + "…",
         "doctype": doc.doctype, "name": doc.name,
-    } for _, date, sentence in sorted(selected)]
+    } for _position, date, sentence in sorted(selected)]
 
 
 def open_tasks(doc):
+    if not frappe.has_permission("ToDo", "read"):
+        return []
     allowed = set(frappe.get_meta("ToDo").get_permitted_fieldnames())
     if not {"reference_type", "reference_name", "status"}.issubset(allowed):
         return []

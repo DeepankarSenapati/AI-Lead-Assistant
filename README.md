@@ -1,18 +1,23 @@
-# AI Lead Assistant
+# AI Extension Framework for ERPNext
 
-An AI-powered ERPNext extension that automates Lead creation from uploaded documents using the Frappe Framework.
+A Frappe v15 app for assigning assistants to ERPNext forms. Open **AI Extensions → AI Feature Dashboard** as a System Manager. Choose a feature and switch on a compatible module or form. Form overrides take precedence. **Use default** restores module inheritance. Open the linked form list, choose a record, then open **Actions** to use the feature.
 
----
+| Assistant | Available on | What it does |
+| --- | --- | --- |
+| Duplicate Finder | Lead, Customer, Supplier, Item | Ranks possible matches using names and identifiers. Works before saving. |
+| CRM Handoff Brief | Lead, Opportunity | Summarizes the saved stage, accessible open tasks and selected CRM note excerpts, with links to the sources. |
+| Purchase Invoice Review | Purchase Invoice | Compares this invoice’s billed quantities and unit prices with explicitly linked purchase order and receipt rows. |
+| Similar Issue Finder | Issue | Searches accessible resolved and closed cases, ranks matching symptoms and shows the recorded resolution. |
+| AI Chat Assistant | ERPNext document forms | Opens a demonstration chat with form context. |
+| AI Form Assistant | Lead, Purchase Receipt | Extracts draft values from attachments using Azure Document Intelligence and OpenAI. |
 
-## Overview
+The four review and search tools run locally. CRM Handoff Brief also offers **Draft handoff with OpenAI** when credentials and source notes or tasks are available. Clicking that button sends the displayed excerpts to the configured account. Reviews and drafts do not update or submit business documents.
 
-AI Lead Assistant is a custom Frappe application developed for ERPNext CRM.
+Feature assignments are stored per site. New installations start with Form Assistant on its mapped forms and the other features opt-in. Each feature declares its compatible DocTypes in the extension catalog. Source access follows the current user’s Frappe permissions.
 
-The extension allows users to upload a document (such as an ID card, business card, or image), extract relevant information using OCR, and automatically populate Lead fields. This reduces manual data entry while improving efficiency and accuracy.
+## Lead extraction walkthrough
 
-The project demonstrates how AI can be integrated into ERPNext through a modular, upgrade-safe custom application without modifying the ERPNext core.
-
----
+The original screenshots below show the earlier **AI Assist** button. The current entry point is **Actions → AI Form Assistant**.
 
 ## Demo Video
 

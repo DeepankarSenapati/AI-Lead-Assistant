@@ -17,7 +17,7 @@ import frappe
 
 FETCH_LIMIT = 100  # rows per query
 MAX_FINDINGS = 10
-MAX_QUERY_LEN = 140
+MAX_QUERY_LEN = 500
 MAX_TOKENS = 3  # distinctive words used to pull candidates per name field
 WARN_SCORE = 0.92
 INFO_SCORE = 0.80
@@ -191,17 +191,23 @@ def analyze(doc, query=None):
 	fields = ["name"] + name_fields + id_fields
 	if meta.has_field("disabled") and _readable(meta, ["disabled"]):
 		fields.append("disabled")
-	or_filters = [f for (field, key), raw in own_ids.items() for f in _id_filters(field, cfg["ids"][field], raw, key)]
+	identifier_filters = [condition for (field, key), raw in own_ids.items()
+		for condition in _id_filters(field, cfg["ids"][field], raw, key)]
+	name_filters = []
 	for field, text in own_names.items():
 		for tok in sorted(_words(text), key=len, reverse=True)[:MAX_TOKENS]:
-			or_filters.append([field, "like", f"%{tok[:2] if _wide(tok) else tok[:4]}%"])
+			name_filters.append([field, "like", f"%{tok[:2] if _wide(tok) else tok[:4]}%"])
 	filters = [["name", "!=", doc.get("name")]] if doc.get("name") else []
 
 	try:
 		rows, truncated = {}, False
-		for order in ("modified desc", "creation asc"):  # newest and oldest, not just recent
+		# Name matches must never use up the identifier query's result budget.
+		for conditions, order in ((identifier_filters, "modified desc"), (name_filters, "modified desc"),
+				(name_filters, "creation asc")):
+			if not conditions:
+				continue
 			found = frappe.get_list(
-				doctype, fields=fields, filters=filters, or_filters=or_filters, order_by=order, limit_page_length=FETCH_LIMIT
+				doctype, fields=fields, filters=filters, or_filters=conditions, order_by=order, limit_page_length=FETCH_LIMIT
 			)
 			truncated = truncated or len(found) >= FETCH_LIMIT
 			rows.update({r["name"]: r for r in found})
@@ -226,8 +232,8 @@ def analyze(doc, query=None):
 		parts = []
 		if id_hits:
 			parts.append(f"Matching identifier: {', '.join(id_hits)}.")
-		for label, score, shared, other in name_hits:
-			parts.append(f"{label} '{other}' is {round(score * 100)}% similar (shared: {', '.join(shared)}).")
+		for label, _score, shared, other in name_hits:
+			parts.append(f"{label}: {other}. Matching words: {', '.join(shared)}.")
 		if row.get("disabled"):
 			parts.append("This record is disabled.")
 		if doctype == "Item" and id_hits:
@@ -243,16 +249,19 @@ def analyze(doc, query=None):
 			}
 		)
 
-	notes.append(f"Compared {len(rows)} readable {doctype} records; records you cannot read are not checked.")
+	notes.append(f"Compared {len(rows)} accessible candidate records.")
 	if truncated:
 		notes.append(f"A search hit the {FETCH_LIMIT}-row limit, so further matches may exist.")
 	if len(matches) > MAX_FINDINGS:
 		notes.append(f"Showing the best {MAX_FINDINGS} of {len(matches)} matches.")
-	notes.append("Candidates are found by exact identifiers and the first letters of distinctive words, so other spellings can be missed.")
+	if matches:
+		notes.append("Open a candidate to confirm its identity.")
+	else:
+		notes.append("Try a different spelling or an identifier for a broader search.")
 
 	summary = (
 		f"{len(matches)} possible duplicate{'s' if len(matches) != 1 else ''} found; please review."
 		if findings
-		else f"No likely duplicates found among the {doctype} records you can read."
+		else f"No likely {doctype} duplicates found in this search."
 	)
 	return {"summary": summary, "findings": findings, "note": " ".join(notes)}

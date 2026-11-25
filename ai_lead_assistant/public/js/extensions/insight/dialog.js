@@ -35,9 +35,15 @@ export function openInsight(feature, frm) {
     const root = dialog.fields_dict.results.$wrapper.attr("aria-live", "polite");
     let pending = false;
 
-    async function run() {
-        if (pending || frm.doc !== doc) return;
-        const query = feature.query_label ? (dialog.get_value("query") || "").trim() : "";
+    async function run(values = {}) {
+        if (pending) return;
+        if (frm.doc !== doc) {
+            dialog.hide();
+            frappe.msgprint(__("The form has changed. Open the assistant again to review the current record."));
+            return;
+        }
+        // Frappe captures the submitted input before refreshing a required dialog field.
+        const query = feature.query_label ? (values.query ?? dialog.get_value("query") ?? "").trim() : "";
         if (query.length > 500) {
             frappe.msgprint(__("Use a search of 500 characters or fewer."));
             return;
@@ -46,6 +52,9 @@ export function openInsight(feature, frm) {
         dialog.get_primary_btn().prop("disabled", true);
         root.empty().text(__("Checking ERPNext records…"));
         try {
+            if (values.query && dialog.get_value("query") !== values.query) {
+                await dialog.set_value("query", values.query);
+            }
             const { message } = await frappe.call({
                 method: "ai_lead_assistant.framework.insights.run",
                 args: { feature: feature.id, doctype: frm.doctype, document_name: documentName, query },
@@ -57,6 +66,7 @@ export function openInsight(feature, frm) {
                 $("<small>", { class: "d-block text-muted mt-1" })
                     .text(__("Sends the displayed sales context, task details and note excerpts to your configured OpenAI account."))
                     .appendTo(root);
+                const draftArea = $("<div>", { "aria-live": "polite" }).prependTo(root);
                 draftButton.on("click", async () => {
                     if (pending) return;
                     pending = true;
@@ -66,10 +76,11 @@ export function openInsight(feature, frm) {
                         const { message: draft } = await frappe.call({
                             method: feature.draft_method, args: { doctype: frm.doctype, document_name: documentName, version: message.version },
                         });
-                        showFindings(root, { ...message, findings: draft.findings });
-                        const block = $("<section>", { class: "border rounded p-3 mb-3" }).prependTo(root);
+                        const block = $("<section>", { class: "border rounded p-3 mb-3" }).appendTo(draftArea.empty());
                         $("<strong>").text(__("AI draft")).appendTo(block);
                         $("<p>", { class: "mt-2 mb-0" }).css("white-space", "pre-wrap").text(draft.text).appendTo(block);
+                    } catch (error) {
+                        draftArea.text(__("The AI draft could not be created. Your local brief is available below."));
                     } finally {
                         pending = false;
                         draftButton.prop("disabled", false);

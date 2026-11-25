@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import frappe
 
-from ai_lead_assistant.extensions import crm_handoff
+from ai_lead_assistant.extensions import crm_handoff, duplicate_finder, invoice_review
 from ai_lead_assistant.framework.assignments import set_assignment
 from ai_lead_assistant.framework.insights import run
 
@@ -40,6 +40,16 @@ class TestInsights(unittest.TestCase):
             self.assertIn(customer.name, [r["name"] for r in result["findings"]])
         result = run("duplicate_finder", "Customer", customer.name)
         self.assertNotIn(customer.name, [r["name"] for r in result["findings"]])
+
+    def test_identifier_match_survives_a_crowded_name_search(self):
+        self.assign("duplicate_finder", "Customer")
+        saved = self.record("Customer", "-input", customer_name="Indigo Loom", tax_id="IN-12-3456")
+        self.record("Customer", "-first", customer_name="Indigo Weavers")
+        exact = self.record("Customer", "-match", customer_name="Aster Textiles", tax_id="IN123456")
+        self.record("Customer", "-last", customer_name="Indigo Yarn")
+        with patch.object(duplicate_finder, "FETCH_LIMIT", 1):
+            report = run("duplicate_finder", "Customer", saved.name)
+        self.assertEqual(report["findings"][0]["name"], exact.name)
 
     def test_different_part_numbers_stay_distinct(self):
         self.assign("duplicate_finder", "Item")
@@ -149,6 +159,25 @@ class TestInsights(unittest.TestCase):
         with patch("ai_lead_assistant.extensions.invoice_review.readable_doc", return_value=None):
             findings = run("invoice_review", "Purchase Invoice", invoice.name)["findings"]
         self.assertFalse(any(r.get("name") == source.name for r in findings))
+
+    def test_incomplete_invoice_review_never_reports_clean(self):
+        _, invoice = self.purchasing(quantities=(1, 2), invoice_rate=10)
+        with patch.object(invoice_review, "MAX_LINES", 1):
+            report = run("invoice_review", "Purchase Invoice", invoice.name)
+        self.assertIn("line cap", report["note"])
+        self.assertFalse(any(f.get("level") == "success" for f in report["findings"]))
+
+    def test_invoice_missing_or_incompatible_source_units(self):
+        source, invoice = self.purchasing()
+        frappe.db.set_value("Purchase Receipt Item", source.items[0].name, "stock_uom", "Kg")
+        report = run("invoice_review", "Purchase Invoice", invoice.name)
+        self.assertIn("stock unit", str(report["findings"]))
+        self.assertNotIn("unit price", str(report["findings"]))
+        self.assertNotIn("alone bills more", str(report["findings"]))
+        frappe.db.set_value("Purchase Receipt", source.name, "docstatus", 2)
+        report = run("invoice_review", "Purchase Invoice", invoice.name)
+        self.assertIn("0 linked", report["summary"])
+        self.assertIn("cancelled", str(report["findings"]))
 
     def test_saved_record_and_assignment_enforcement(self):
         self.assign("crm_handoff", "Lead")

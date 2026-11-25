@@ -104,13 +104,13 @@ class _Review:
 			self.add(f"{label} row not found",
 				f"Rows {rows} cite row {detail}, absent from {pname} (or hidden by permissions).", dt, pname)
 			return
-		self.checked += 1
 		d, bad = self.doc, []
 
 		if parent.get("docstatus") != 1:
 			state = {0: "draft", 2: "cancelled"}.get(parent.get("docstatus"), "not submitted")
 			self.add(f"{label} source is {state}", f"Rows {rows} refer to {pname}. Check the document status before comparing quantities.", dt, pname)
 			return
+		self.checked += 1
 		for f in ("company", "supplier"):
 			a, b = d.get(f), parent.get(f)
 			if a and b and a != b:
@@ -178,7 +178,8 @@ class _Review:
 				f"Without order or receipt links: {self.no_ref}. Order only: {self.po_only}. "
 				f"Receipt only: {self.pr_only}. Unlinked quantities cannot be compared."
 			)})
-		if not n and self.checked and not self.qty_skipped and not self.price_skipped and not self.hidden:
+		if self.checked and not any((n, self.qty_skipped, self.price_skipped, self.hidden,
+				self.docs_skipped, self.lines_cut)):
 			shown.append({"title": "No variance on the compared rows", "level": "success",
 				"detail": "Billed quantities fit within the linked rows and comparable unit prices agree."})
 		notes = [SCOPE]
