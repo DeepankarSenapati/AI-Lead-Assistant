@@ -1,0 +1,16 @@
+{
+ "modified": "2026-11-25 00:00:00.000000",
+ "doctype": "DocType",
+ "name": "AI Feature Assignment",
+ "module": "AI Lead Assistant",
+ "engine": "InnoDB",
+ "autoname": "hash",
+ "field_order": ["feature", "target_type", "target", "enabled"],
+ "fields": [
+  {"fieldname": "feature", "label": "Feature", "fieldtype": "Data", "reqd": 1},
+  {"fieldname": "target_type", "label": "Target Type", "fieldtype": "Link", "options": "DocType", "reqd": 1},
+  {"fieldname": "target", "label": "Target", "fieldtype": "Dynamic Link", "options": "target_type", "reqd": 1},
+  {"fieldname": "enabled", "label": "Enabled", "fieldtype": "Check", "default": "0"}
+ ],
+ "permissions": [{"role": "System Manager", "read": 1}]
+}

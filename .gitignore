@@ -29,3 +29,6 @@ venv/
 
 # Misc
 tags
+
+# Built by bench build
+/ai_lead_assistant/public/dist/

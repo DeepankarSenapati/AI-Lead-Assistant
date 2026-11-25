@@ -1,0 +1,66 @@
+.ai-assignment-dashboard {
+    --ai-accent: var(--teal-700);
+    --ai-tint: var(--teal-50);
+    padding: 18px 0 32px;
+}
+[data-theme="dark"] .ai-assignment-dashboard {
+    --ai-accent: var(--teal-300);
+    --ai-tint: var(--gray-800);
+}
+.ai-assignment-dashboard h2 { font-size: var(--text-lg); margin: 0 0 12px; }
+.ai-assignment-dashboard strong { font-weight: 600; }
+.ai-assignment-dashboard small { display: block; margin-top: 3px; color: var(--text-muted); font-size: var(--text-sm); }
+.ai-catalog { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(245px, 100%), 1fr)); gap: 12px; }
+.ai-feature-card {
+    display: flex; align-items: flex-start; gap: 14px; text-align: left; padding: 16px;
+    color: var(--text-color); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px;
+}
+.ai-feature-card[aria-pressed="true"] { border-color: var(--ai-accent); background: var(--ai-tint); }
+.ai-feature-card[aria-pressed="true"] strong { color: var(--ai-accent); }
+.ai-feature-icon {
+    display: grid; place-items: center; flex: 0 0 34px; height: 34px; background: var(--card-bg);
+    border: 1px solid var(--border-color); border-radius: 8px;
+}
+.ai-assignment-layout {
+    display: grid; grid-template-columns: minmax(165px, 23%) minmax(0, 1fr); margin-top: 22px;
+    background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden;
+}
+.ai-assignment-layout nav { padding: 18px 14px; border-right: 1px solid var(--border-color); }
+.ai-modules, .ai-forms { overflow-y: auto; max-height: 52vh; margin-top: 12px; overscroll-behavior: contain; }
+.ai-modules button {
+    display: block; width: 100%; text-align: left; background: transparent; color: var(--text-color);
+    border: 0; border-radius: 5px; padding: 7px 9px; margin-bottom: 2px;
+}
+.ai-modules button[aria-pressed="true"] { background: var(--ai-tint); color: var(--ai-accent); font-weight: 600; }
+.ai-modules button:hover, .ai-feature-card:hover { box-shadow: inset 0 0 0 1px var(--border-color); }
+.ai-targets { padding: 18px 20px; min-width: 0; }
+.ai-section-line, .ai-form-row, .ai-default { display: flex; align-items: center; gap: 12px; }
+.ai-section-line { flex-wrap: wrap; justify-content: space-between; margin-bottom: 12px; }
+.ai-section-line h2 { margin: 0; }
+.ai-coverage, .ai-feedback { color: var(--text-muted); font-size: var(--text-sm); }
+.ai-default { justify-content: space-between; background: var(--subtle-fg); border-radius: 7px; padding: 12px; margin-bottom: 14px; }
+.ai-form-row { justify-content: flex-end; padding: 10px 2px; border-bottom: 1px solid var(--border-color); }
+.ai-form-row:last-child { border-bottom: 0; }
+.ai-row-copy { margin-right: auto; }
+.ai-assignment-dashboard .ai-warning { color: var(--orange-700); }
+[data-theme="dark"] .ai-assignment-dashboard .ai-warning { color: var(--orange-400); }
+.ai-toggle {
+    display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; min-width: 63px; padding: 5px;
+    background: transparent; color: var(--text-color); border: none; border-radius: 4px; font-size: var(--text-sm);
+}
+.ai-toggle:disabled { color: var(--text-muted); }
+.ai-switch-track { width: 26px; height: 16px; border-radius: 20px; padding: 2px; background: var(--gray-500); }
+.ai-switch-track::before { content: ""; display: block; border-radius: 50%; width: 12px; height: 12px; background: white; }
+.ai-toggle[aria-checked="true"] .ai-switch-track { background: var(--teal-700); }
+.ai-toggle[aria-checked="true"] .ai-switch-track::before { transform: translateX(10px); }
+.ai-toggle:disabled .ai-switch-track { opacity: .45; }
+.ai-feedback { margin-top: 8px; }
+.ai-retry { margin-left: 8px; }
+@media (max-width: 700px) {
+    .ai-assignment-layout { grid-template-columns: 1fr; }
+    .ai-assignment-layout nav { border-right: 0; border-bottom: 1px solid var(--border-color); }
+    .ai-modules { display: flex; overflow-x: auto; gap: 4px; }
+    .ai-modules button { width: auto; white-space: nowrap; }
+    .ai-targets { padding: 15px; }
+    .ai-form-row { flex-wrap: wrap; gap: 4px; }
+}

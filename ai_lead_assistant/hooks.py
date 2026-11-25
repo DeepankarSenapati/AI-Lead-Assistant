@@ -6,10 +6,8 @@ app_email = "deepankar066@gmail.com"
 app_license = "mit"
 
 
-doctype_js = {
-    "Lead": "public/js/lead.js",
-    "Purchase Receipt": "public/js/purchase_receipt.js",
-}
+app_include_js = ["ai_lead_assistant.bundle.js"]
+boot_session = "ai_lead_assistant.framework.assignments.boot_session"
 
 fixtures = [
     {

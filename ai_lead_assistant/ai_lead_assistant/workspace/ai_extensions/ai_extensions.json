@@ -1,0 +1,13 @@
+{
+ "modified": "2026-11-25 00:00:00.000000",
+ "doctype": "Workspace",
+ "name": "AI Extensions",
+ "label": "AI Extensions",
+ "title": "AI Extensions",
+ "module": "AI Lead Assistant",
+ "public": 1,
+ "icon": "tool",
+ "roles": [{"role": "System Manager"}],
+ "content": "[{\"id\":\"ai-assign\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"AI Feature Dashboard\",\"col\":4}}]",
+ "shortcuts": [{"label": "AI Feature Dashboard", "type": "Page", "link_to": "ai-feature-dashboard"}]
+}

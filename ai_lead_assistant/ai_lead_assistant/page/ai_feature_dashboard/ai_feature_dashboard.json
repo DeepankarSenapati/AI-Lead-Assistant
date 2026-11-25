@@ -1,0 +1,10 @@
+{
+ "modified": "2026-11-25 00:00:00.000000",
+ "doctype": "Page",
+ "name": "ai-feature-dashboard",
+ "page_name": "ai-feature-dashboard",
+ "title": "AI Feature Dashboard",
+ "module": "AI Lead Assistant",
+ "standard": "Yes",
+ "roles": [{"role": "System Manager"}]
+}
