@@ -14,6 +14,8 @@ class Feature:
 	query_label: str = ""
 	needs_saved: bool = False
 	draft_method: str = ""
+	draft_label: str = ""
+	draft_notice: str = ""
 
 	def supports(self, doctype):
 		return self.forms is None or doctype in self.forms
@@ -31,4 +33,6 @@ class Feature:
 			"query_label": self.query_label,
 			"needs_saved": self.needs_saved,
 			"draft_method": self.draft_method,
+			"draft_label": self.draft_label,
+			"draft_notice": self.draft_notice,
 		}

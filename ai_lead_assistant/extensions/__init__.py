@@ -33,6 +33,8 @@ FEATURES = {
 		unavailable_reason="CRM Handoff Brief uses Lead and Opportunity notes and tasks.",
 		analyzer="ai_lead_assistant.extensions.crm_handoff.analyze",
 		draft_method="ai_lead_assistant.extensions.crm_handoff.draft",
+		draft_label="Draft handoff with OpenAI",
+		draft_notice="Sends the displayed sales context, task details and note excerpts to your configured OpenAI account.",
 		needs_saved=True,
 	),
 	"invoice_review": Feature(
@@ -52,5 +54,26 @@ FEATURES = {
 		unavailable_reason="Similar Issue Finder uses support Issue descriptions and resolutions.",
 		analyzer="ai_lead_assistant.extensions.similar_issues.analyze",
 		query_label="Symptoms or error message",
+	),
+	"transaction_followup": Feature(
+		label="Transaction Follow-up",
+		description="See what is still due on an order, stock document or invoice and open the linked records.",
+		icon="branch",
+		forms=frozenset(
+			{
+				"Sales Order",
+				"Purchase Order",
+				"Delivery Note",
+				"Purchase Receipt",
+				"Sales Invoice",
+				"Purchase Invoice",
+			}
+		),
+		unavailable_reason="Transaction Follow-up supports sales and purchase orders, delivery notes, purchase receipts and invoices.",
+		analyzer="ai_lead_assistant.extensions.transaction_followup.analyze",
+		needs_saved=True,
+		draft_method="ai_lead_assistant.extensions.transaction_followup.draft",
+		draft_label="Draft internal follow-up with OpenAI",
+		draft_notice="Sends the displayed transaction findings and linked record references to your configured OpenAI account.",
 	),
 }

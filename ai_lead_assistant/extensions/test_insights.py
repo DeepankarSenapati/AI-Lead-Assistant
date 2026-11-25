@@ -11,7 +11,7 @@ from ai_lead_assistant.framework.assignments import set_assignment
 from ai_lead_assistant.framework.insights import run
 
 
-class TestInsights(unittest.TestCase):
+class InsightTestCase(unittest.TestCase):
 	def setUp(self):
 		self.addCleanup(frappe.set_user, frappe.session.user)
 		frappe.set_user("Administrator")
@@ -32,6 +32,8 @@ class TestInsights(unittest.TestCase):
 	def assign(self, feature, doctype):
 		set_assignment(feature, "DocType", doctype, "on")
 
+
+class TestInsights(InsightTestCase):
 	def test_duplicate_name_and_identifiers_work_before_save(self):
 		self.assign("duplicate_finder", "Customer")
 		customer = self.record(

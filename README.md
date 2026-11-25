@@ -7,11 +7,14 @@ A Frappe v15 app for assigning assistants to ERPNext forms. Open **AI Extensions
 | Duplicate Finder | Lead, Customer, Supplier, Item | Ranks possible matches using names and identifiers. Works before saving. |
 | CRM Handoff Brief | Lead, Opportunity | Summarizes the saved stage, accessible open tasks and selected CRM note excerpts, with links to the sources. |
 | Purchase Invoice Review | Purchase Invoice | Compares this invoice’s billed quantities and unit prices with explicitly linked purchase order and receipt rows. |
+| Transaction Follow-up | Sales Order, Purchase Order, Delivery Note, Purchase Receipt, Sales Invoice, Purchase Invoice | Explains fulfillment, billing or payment status and shows the figures on directly linked records across Selling, Buying, Stock and Accounting. |
 | Similar Issue Finder | Issue | Searches accessible resolved and closed cases, ranks matching symptoms and shows the recorded resolution. |
 | AI Chat Assistant | ERPNext document forms | Opens a demonstration chat with form context. |
 | AI Form Assistant | Lead, Purchase Receipt | Extracts draft values from attachments using Azure Document Intelligence and OpenAI. |
 
-The four review and search tools run locally. CRM Handoff Brief also offers **Draft handoff with OpenAI** when credentials and source notes or tasks are available. Clicking that button sends the displayed excerpts to the configured account. Reviews and drafts do not update or submit business documents.
+The five review and search tools run locally. CRM Handoff Brief and Transaction Follow-up can also draft an internal note when OpenAI is configured in AI Settings. The draft button shows which evidence will be sent. The reviewer decides how to use the result.
+
+On an order, Transaction Follow-up separates the quantity delivered or received from the amount billed and shows up to three open item rows by earliest due date. Stock documents show billing progress. Invoices show their saved payment status and balance in the party account currency. The assistant links up to three visible, submitted records of each related type. A linked invoice balance covers the whole invoice, including any other orders it bills.
 
 Feature assignments are stored per site. New installations start with Form Assistant on its mapped forms and leave the other features available to assign. Each feature declares its compatible DocTypes in the extension catalog. Source access follows the current user’s Frappe permissions.
 

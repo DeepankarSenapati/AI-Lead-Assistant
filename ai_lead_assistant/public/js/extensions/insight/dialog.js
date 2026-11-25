@@ -69,9 +69,9 @@ export function openInsight(feature, frm) {
             showFindings(root, message);
             if (message.can_draft && feature.draft_method) {
                 const draftButton = $("<button>", { type: "button", class: "btn btn-default btn-sm" })
-                    .text(__("Draft handoff with OpenAI")).appendTo(root);
+                    .text(__(feature.draft_label || "Draft handoff with OpenAI")).appendTo(root);
                 $("<small>", { class: "d-block text-muted mt-1" })
-                    .text(__("Sends the displayed sales context, task details and note excerpts to your configured OpenAI account."))
+                    .text(__(feature.draft_notice || "Sends the displayed sales context, task details and note excerpts to your configured OpenAI account."))
                     .appendTo(root);
                 const draftArea = $("<div>", { "aria-live": "polite" }).prependTo(root);
                 draftButton.on("click", async () => {
