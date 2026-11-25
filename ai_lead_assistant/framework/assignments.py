@@ -28,10 +28,7 @@ def form_module(doctype):
 def rules_for(module, doctype):
     rows = frappe.get_all(
         RULE,
-        or_filters=[
-            [RULE, "target", "=", module],
-            [RULE, "target", "=", doctype],
-        ],
+        filters={"target": ["in", [module, doctype]]},
         fields=["feature", "target_type", "target", "enabled"],
     )
     return {(r.feature, r.target_type, r.target): bool(r.enabled) for r in rows}

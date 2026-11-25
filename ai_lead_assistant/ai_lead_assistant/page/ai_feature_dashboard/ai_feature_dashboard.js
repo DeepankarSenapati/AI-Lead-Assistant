@@ -169,7 +169,8 @@ class FeatureDashboard {
             await this.load();
             this.root.removeAttr("aria-busy");
             const controls = this.root.find("[data-state]").toArray();
-            controls.find(el => el.dataset.type === type && el.dataset.target === target && !el.disabled)?.focus();
+            controls.find(el => el.getAttribute("role") === "switch" && el.dataset.type === type &&
+                el.dataset.target === target && !el.disabled)?.focus({ preventScroll: true });
         }
     }
 }

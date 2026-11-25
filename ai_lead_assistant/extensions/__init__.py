@@ -6,7 +6,7 @@ FEATURES = {
     "chat_assistant": Feature(
         label="AI Chat Assistant",
         description="Open a demo conversation with context from the current form.",
-        icon="message",
+        icon="comment",
     ),
     "form_assistant": Feature(
         label="AI Form Assistant",

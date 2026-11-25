@@ -25,7 +25,7 @@
     display: grid; grid-template-columns: minmax(165px, 23%) minmax(0, 1fr); margin-top: 22px;
     background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden;
 }
-.ai-assignment-layout nav { padding: 18px 14px; border-right: 1px solid var(--border-color); }
+.ai-assignment-layout nav { min-width: 0; padding: 18px 14px; border-right: 1px solid var(--border-color); }
 .ai-modules, .ai-forms { overflow-y: auto; max-height: 52vh; margin-top: 12px; overscroll-behavior: contain; }
 .ai-modules button {
     display: block; width: 100%; text-align: left; background: transparent; color: var(--text-color);
@@ -57,10 +57,11 @@
 .ai-feedback { margin-top: 8px; }
 .ai-retry { margin-left: 8px; }
 @media (max-width: 700px) {
-    .ai-assignment-layout { grid-template-columns: 1fr; }
+    .ai-assignment-layout { grid-template-columns: minmax(0, 1fr); }
     .ai-assignment-layout nav { border-right: 0; border-bottom: 1px solid var(--border-color); }
     .ai-modules { display: flex; overflow-x: auto; gap: 4px; }
-    .ai-modules button { width: auto; white-space: nowrap; }
+    [data-page-route="ai-feature-dashboard"] .page-title .title-text { max-width: 80vw; }
+    .ai-modules button { flex: 0 0 auto; width: auto; white-space: nowrap; }
     .ai-targets { padding: 15px; }
     .ai-form-row { flex-wrap: wrap; gap: 4px; }
 }

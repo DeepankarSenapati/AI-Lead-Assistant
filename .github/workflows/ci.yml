@@ -89,10 +89,11 @@ jobs:
       - name: Install
         working-directory: /home/runner/frappe-bench
         run: |
+          bench get-app --branch version-15 erpnext
           bench get-app ai_lead_assistant $GITHUB_WORKSPACE
           bench setup requirements --dev
           bench new-site --db-root-password root --admin-password admin test_site
-          bench --site test_site install-app ai_lead_assistant
+          bench --site test_site install-app erpnext ai_lead_assistant
           bench build
         env:
           CI: 'Yes'
