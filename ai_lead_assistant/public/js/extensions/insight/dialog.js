@@ -17,8 +17,8 @@ function showFindings(root, result) {
 }
 
 export function openInsight(feature, frm) {
-    if (feature.needs_saved && (frm.is_new() || frm.is_dirty())) {
-        frappe.msgprint(__("Save your changes, then open {0} to review this version.", [__(feature.label)]));
+    if (feature.needs_saved && frm.is_new()) {
+        frappe.msgprint(__("Save the new document, then open {0} to review it.", [__(feature.label)]));
         return;
     }
     const doc = frm.doc;
@@ -30,8 +30,15 @@ export function openInsight(feature, frm) {
         fields.push({ fieldtype: "Small Text", fieldname: "query", label: __(feature.query_label),
             default: seed, description: documentName ? __("Leave blank to use the saved record.") : "", reqd: !documentName });
     }
+    if (feature.needs_saved && frm.is_dirty()) {
+        fields.push({ fieldtype: "HTML", fieldname: "saved_notice" });
+    }
     fields.push({ fieldtype: "HTML", fieldname: "results" });
     const dialog = new frappe.ui.Dialog({ title: __(feature.label), fields, size: "large" });
+    if (dialog.fields_dict.saved_notice) {
+        $("<p>", { class: "text-muted" }).text(__("Reviewing the saved version. Save the form to include your latest edits."))
+            .appendTo(dialog.fields_dict.saved_notice.$wrapper);
+    }
     const root = dialog.fields_dict.results.$wrapper.attr("aria-live", "polite");
     let pending = false;
 
