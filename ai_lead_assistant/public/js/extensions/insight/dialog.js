@@ -103,6 +103,13 @@ export function openInsight(feature, frm) {
         }
     }
     dialog.set_primary_action(feature.query_label ? __("Find matches") : __("Run review"), run);
+    if (feature.page_route) {
+        dialog.set_secondary_action_label(__("Open worklist"));
+        dialog.set_secondary_action(() => {
+            dialog.hide();
+            frappe.set_route(feature.page_route);
+        });
+    }
     dialog.show();
     if (documentName || seed) run();
 }

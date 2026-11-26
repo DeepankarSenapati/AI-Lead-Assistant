@@ -24,3 +24,5 @@ fixtures = [
         ]
     }
 ]
+
+scheduler_events = {"hourly_long": ["ai_lead_assistant.dispatch.history.collect"]}

@@ -1,0 +1,64 @@
+{
+ "doctype": "DocType",
+ "name": "AI Dispatch Checkpoint",
+ "module": "AI Lead Assistant",
+ "engine": "InnoDB",
+ "modified": "2026-11-26 00:00:00.000000",
+ "field_order": [
+  "observed_on",
+  "captured_at",
+  "days_left",
+  "ordered_qty",
+  "delivered_qty",
+  "uom",
+  "progress_band"
+ ],
+ "fields": [
+  {
+   "fieldname": "observed_on",
+   "label": "Observed on",
+   "fieldtype": "Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "captured_at",
+   "label": "Captured at",
+   "fieldtype": "Datetime",
+   "read_only": 1
+  },
+  {
+   "fieldname": "days_left",
+   "label": "Calendar days to promise",
+   "fieldtype": "Int",
+   "read_only": 1
+  },
+  {
+   "fieldname": "ordered_qty",
+   "label": "Ordered",
+   "fieldtype": "Float",
+   "read_only": 1,
+   "precision": "9"
+  },
+  {
+   "fieldname": "delivered_qty",
+   "label": "Dispatched",
+   "fieldtype": "Float",
+   "read_only": 1,
+   "precision": "9"
+  },
+  {
+   "fieldname": "uom",
+   "label": "Unit",
+   "fieldtype": "Data",
+   "read_only": 1
+  },
+  {
+   "fieldname": "progress_band",
+   "label": "Dispatch progress band",
+   "fieldtype": "Data",
+   "read_only": 1
+  }
+ ],
+ "permissions": [],
+ "istable": 1
+}

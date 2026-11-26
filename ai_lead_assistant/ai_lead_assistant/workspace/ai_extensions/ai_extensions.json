@@ -1,5 +1,5 @@
 {
- "modified": "2026-11-25 00:00:00.000000",
+ "modified": "2026-11-26 00:00:00.000000",
  "doctype": "Workspace",
  "name": "AI Extensions",
  "label": "AI Extensions",
@@ -7,7 +7,22 @@
  "module": "AI Lead Assistant",
  "public": 1,
  "icon": "tool",
- "roles": [{"role": "System Manager"}],
- "content": "[{\"id\":\"ai-assign\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"AI Feature Dashboard\",\"col\":4}}]",
- "shortcuts": [{"label": "AI Feature Dashboard", "type": "Page", "link_to": "ai-feature-dashboard"}]
+ "roles": [
+  {
+   "role": "System Manager"
+  }
+ ],
+ "content": "[{\"id\":\"ai-assign\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"AI Feature Dashboard\",\"col\":4}},{\"id\":\"dispatch-queue\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Dispatch Watchlist\",\"col\":4}}]",
+ "shortcuts": [
+  {
+   "label": "AI Feature Dashboard",
+   "type": "Page",
+   "link_to": "ai-feature-dashboard"
+  },
+  {
+   "label": "Dispatch Watchlist",
+   "type": "Page",
+   "link_to": "dispatch-watchlist"
+  }
+ ]
 }

@@ -1,0 +1,126 @@
+{
+ "doctype": "DocType",
+ "name": "AI Dispatch Promise",
+ "module": "AI Lead Assistant",
+ "engine": "InnoDB",
+ "modified": "2026-11-26 00:00:00.000000",
+ "field_order": [
+  "order_name",
+  "line_id",
+  "company",
+  "item_code",
+  "due_date",
+  "first_seen",
+  "ordered_qty",
+  "conversion_factor",
+  "uom",
+  "stock_uom",
+  "qty_precision",
+  "outcome",
+  "resolved_at",
+  "outcome_note",
+  "checkpoints"
+ ],
+ "fields": [
+  {
+   "fieldname": "order_name",
+   "label": "Sales Order",
+   "fieldtype": "Data",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "line_id",
+   "label": "Sales Order Item",
+   "fieldtype": "Data",
+   "read_only": 1
+  },
+  {
+   "fieldname": "company",
+   "label": "Company",
+   "fieldtype": "Data",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "item_code",
+   "label": "Item",
+   "fieldtype": "Data",
+   "read_only": 1
+  },
+  {
+   "fieldname": "due_date",
+   "label": "Frozen promise date",
+   "fieldtype": "Date",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "first_seen",
+   "label": "First observation",
+   "fieldtype": "Datetime",
+   "read_only": 1
+  },
+  {
+   "fieldname": "ordered_qty",
+   "label": "Ordered quantity",
+   "fieldtype": "Float",
+   "read_only": 1,
+   "precision": "9"
+  },
+  {
+   "fieldname": "conversion_factor",
+   "label": "Stock units per order unit",
+   "fieldtype": "Float",
+   "read_only": 1,
+   "precision": "9"
+  },
+  {
+   "fieldname": "uom",
+   "label": "Order unit",
+   "fieldtype": "Data",
+   "read_only": 1
+  },
+  {
+   "fieldname": "stock_uom",
+   "label": "Stock unit",
+   "fieldtype": "Data",
+   "read_only": 1
+  },
+  {
+   "fieldname": "qty_precision",
+   "label": "Quantity precision",
+   "fieldtype": "Int",
+   "read_only": 1
+  },
+  {
+   "fieldname": "outcome",
+   "label": "Outcome",
+   "fieldtype": "Select",
+   "read_only": 1,
+   "options": "Pending\nOn time\nMissed\nExcluded",
+   "default": "Pending",
+   "search_index": 1
+  },
+  {
+   "fieldname": "resolved_at",
+   "label": "Assessed at",
+   "fieldtype": "Datetime",
+   "read_only": 1
+  },
+  {
+   "fieldname": "outcome_note",
+   "label": "Outcome evidence",
+   "fieldtype": "Small Text",
+   "read_only": 1
+  },
+  {
+   "fieldname": "checkpoints",
+   "label": "Daily observations",
+   "fieldtype": "Table",
+   "read_only": 1,
+   "options": "AI Dispatch Checkpoint"
+  }
+ ],
+ "permissions": []
+}

@@ -76,4 +76,14 @@ FEATURES = {
 		draft_label="Draft internal follow-up with OpenAI",
 		draft_notice="Sends the displayed transaction findings and linked record references to your configured OpenAI account.",
 	),
+	"dispatch_watchlist": Feature(
+		label="Dispatch Watchlist",
+		description="Review upcoming dispatch promises, try a shipment scenario and follow actual outcomes.",
+		icon="milestone",
+		forms=frozenset({"Sales Order"}),
+		unavailable_reason="Dispatch Watchlist uses promised dates on Sales Order stock-item rows.",
+		analyzer="ai_lead_assistant.dispatch.api.analyze",
+		needs_saved=True,
+		page_route="dispatch-watchlist",
+	),
 }

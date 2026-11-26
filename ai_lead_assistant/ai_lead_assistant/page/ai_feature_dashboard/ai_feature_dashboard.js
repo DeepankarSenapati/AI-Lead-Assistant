@@ -117,6 +117,10 @@ class FeatureDashboard {
         const line = $("<div>", { class: "ai-section-line" }).appendTo(heading);
         $("<h2>").text(this.moduleLabel(this.module)).appendTo(line);
         $("<span>", { class: "ai-coverage" }).text(__("{0} of {1} forms compatible", [count, rows.length])).appendTo(line);
+        if (this.feature.page_route) {
+            $("<a>", { class: "btn btn-default btn-sm my-2", href: "/app/" + encodeURIComponent(this.feature.page_route) })
+                .text(__("Open {0}", [__(this.feature.label)])).appendTo(heading);
+        }
         const group = $("<div>", { class: "ai-default" }).appendTo(heading);
         const copy = $("<div>").appendTo(group);
         $("<strong>").text(__("Module default")).appendTo(copy);

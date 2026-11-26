@@ -16,6 +16,7 @@ class Feature:
 	draft_method: str = ""
 	draft_label: str = ""
 	draft_notice: str = ""
+	page_route: str = ""
 
 	def supports(self, doctype):
 		return self.forms is None or doctype in self.forms
@@ -35,4 +36,5 @@ class Feature:
 			"draft_method": self.draft_method,
 			"draft_label": self.draft_label,
 			"draft_notice": self.draft_notice,
+			"page_route": self.page_route,
 		}
